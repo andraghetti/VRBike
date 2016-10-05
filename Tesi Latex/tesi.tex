@@ -1,0 +1,123 @@
+%per margine interno
+%\documentclass[12pt,a4paper,twoside,openleft]{memoir}
+
+%per margine esterno:
+\documentclass[12pt,a4paper,twoside,openright]{report}
+
+%Per immagini
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{wrapfig}
+\usepackage{lipsum}
+\usepackage{subfig}
+\usepackage{subfloat}
+
+%per codice
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+
+\usepackage{color}
+\definecolor{bluekeywords}{rgb}{0.13,0.13,1}
+\definecolor{greencomments}{rgb}{0,0.5,0}
+\definecolor{redstrings}{rgb}{0.9,0,0}
+
+
+%per forzare a destra
+\newcommand*\cleartorightpage{%
+  \clearpage
+  \ifodd\value{page}\hbox{}\newpage\fi
+}
+%
+%\setsecnumdepth{subsubsection}
+%\maxtocdepth{subsection}
+
+\usepackage{listings}
+\lstset{language=[Sharp]C,
+  showspaces=false,
+  showtabs=false,
+  breaklines=true,
+  showstringspaces=false,
+  breakatwhitespace=true,
+  escapeinside={(*@}{@*)},
+  commentstyle=\color{greencomments},
+  keywordstyle=\color{bluekeywords},
+  stringstyle=\color{redstrings},
+  basicstyle=\ttfamily,
+  tabsize=4,
+  literate={\ \ }{{\ }}1
+}
+
+\usepackage{tabularx}
+\usepackage{afterpage}
+\usepackage{amsmath,amssymb}   
+\usepackage{rotating} 
+\usepackage{caption} 
+\hyphenation{a-gen-tiz-za-zio-ne}
+%\usepackage[htt]{hyphenat}
+%\usepackage[none]{hyphenat}
+
+%%per gli hyper text e url
+%\usepackage{url}
+
+
+%\usepackage{showframe} % per i frame del testo
+\usepackage{nameref} %per il nome dei capitoli
+\usepackage{gensymb} % per i simboli tipo °
+\newcommand{\Csharp}{%
+  {\settoheight{\dimen0}{C}C\kern-.05em \resizebox{!}{\dimen0}{\raisebox{\depth}{\#}}}} % per c#      
+
+
+\setlength{\paperwidth}{16cm}
+\setlength{\paperheight}{24cm}
+\linespread{1.1}
+
+\setlength{\textwidth}{380pt}
+
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+\renewcommand{\captionfont}{\normalfont \sffamily \itshape \small}
+
+\pagestyle{empty}
+\begin{document}
+%\cleartorightpage %commentare se vuoi margine esterno
+\include{frontespizio}
+%\cleartorightpage %commentare se vuoi margine esterno
+\cleardoublepage
+\include{dedica}
+\cleardoublepage
+\pagestyle{plain}\renewcommand{\chaptermark}[1]{\markboth{\chaptername\ \thechapter.\ #1}{}} 
+\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}  
+\include{indice}                          
+
+\include{Introduzione}
+\include{RealtaVirtuale}
+\include{ArchitetturaHardware}
+\include{ArchitetturaSoftware}
+\include{Sperimentazione}
+\include{Conclusioni}
+
+\cleardoublepage
+
+\appendix
+
+\lstset{basicstyle=\ttfamily\scriptsize}
+
+\include{appendiceA}
+\include{appendiceB}
+
+%\cleartorightpage %commentare se vuoi margine esterno
+\listoffigures
+
+% ---- Bibliography ----
+%\addcontentsline{toc}{chapter}{Bibliografia} //dà un errore
+\bibliographystyle{plain}
+\bibliography{bibl_tesi}
+\nocite{*}
+
+
+\end{document}
+
+
+
+
+
