@@ -58,6 +58,7 @@ public class MotoController : MonoBehaviour {
     private float sterzata;
     private int lastInputSterzata;
     private Vector3 euler;
+    private Thread thread;
 
     void Start()
     {
@@ -72,11 +73,11 @@ public class MotoController : MonoBehaviour {
 
         dtw = new ThreadDTWSlideWindow(PortName);
         dtw.PedalataTrovata += Dtw_PedalataTrovata; ;
-        Thread t = new Thread(dtw.start);
+        thread = new Thread(dtw.start);
 
         euler = SteeringHandlebar.localEulerAngles;
 
-        t.Start();
+        thread.Start();
     }
 
     private void Dtw_PedalataTrovata(int inputSterzo, float inputPedalata)
@@ -290,6 +291,7 @@ public class MotoController : MonoBehaviour {
     void OnApplicationQuit()
     {
         Debug.Log("Chiusura del programma: " + (dtw == null));
+        thread.Abort();
         dtw.stopThread();
     }
 
