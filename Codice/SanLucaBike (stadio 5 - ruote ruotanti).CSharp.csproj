@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{D5F698CA-37A0-C409-597A-E3732119795A}</ProjectGuid>
+    <ProjectGuid>{D140BE77-EE0D-90D9-3550-FC13666F1D92}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>Assembly-CSharp</AssemblyName>
     <FileAlignment>512</FileAlignment>
@@ -99,7 +99,6 @@
     <Compile Include="Assets\OSVRUnity\src\OrientationInterface.cs" />
     <Compile Include="Assets\OSVRUnity\src\OsvrCharacterMotor.cs" />
     <Compile Include="Assets\OSVRUnity\src\OsvrInputController.cs" />
-    <Compile Include="Assets\OSVRUnity\src\OsvrMouseLook.cs" />
     <Compile Include="Assets\OSVRUnity\src\OsvrRenderManager.cs" />
     <Compile Include="Assets\OSVRUnity\src\PoseInterface.cs" />
     <Compile Include="Assets\OSVRUnity\src\PositionInterface.cs" />

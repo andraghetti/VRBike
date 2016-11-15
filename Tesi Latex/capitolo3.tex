@@ -1,17 +1,9 @@
-\chapter{Impostazione del problema di ricerca}
+\chapter{Architettura del sistema}
 \label{capitolo3}
 \thispagestyle{empty}
 
-\begin{quotation}
-{\footnotesize
-\noindent{\emph{``Bud: Apri!\\
-Cattivo: Perché, altrimenti vi arrabbiate?\\
-Bud e Terence: Siamo già arrabbiati!''}}
-\begin{flushright}
-Altrimenti ci arrabbiamo
-\end{flushright}
-}
-\end{quotation}
-\vspace{0.5cm}
-
-\noindent In questa sezione si deve descrivere l'obiettivo della ricerca, le problematiche affrontate ed eventuali definizioni preliminari nel caso la tesi sia di carattere teorico.
+\noindent In questo capitolo si descriverà la progettazione del sistema creato. Inizialmente si tratterà l'analisi del progetto e le scelte effettuate per quanto riguarda gli strumenti da utilizzare. Successivamente si descriveranno tutti i moduli che compongono l'architettura del sistema. La trattazione è divisa in parte hardware e parte software.
+\section{Analisi del sistema hardware}
+L'obiettivo del progetto è quello di creare uno strumento che permetta all'utilizzatore di pedalare, sterzare e osservare un luogo in un mondo virtuale. In primo luogo, era necessario creare un sistema simile ad una bicicletta. Ai fini di sperimentazione della tipologia di progetto, si è scelto di utilizzare una cyclette. La suddetta, permette di semplificare notevolmente il sistema elettronico e il sistema software, poiché questi non devono tenere conto dell'attrito e del ritorno di forza, in quanto una pedalata farà sempre ruotare l'organo rotante. La cyclette è inoltre sprovvista di freni, i quali potrebbero essere utilizzati per frenare la bicicletta virtuale. Si è quindi scelto di ottenere solo le informazioni relative alla pedalata e alla posizione del manubrio. Queste informazioni devono essere elaborate da un microprocessore che ottiene i dati da tutti i sensori e genera una macro-informazione da inviare al sistema software.
+\subsection{Sensori del manubrio}
+Per ottenere le informazioni relative alla posizione del manubrio è stato scelto un angolo massimo di rotazione di 120\degree. Questo angolo è stato diviso in 16 posizioni. Per ottenere la posizione corrente è stata necessaria una codifica in 4 bit. Per ottenere questa codifica, si è fatto uso di 4 fotodiodi\footnote{Il fotodiodo è un particolare tipo di diodo fotorilevatore che funziona come sensore ottico sfruttando l'effetto fotovoltaico, in grado cioè di riconoscere una determinata lunghezza d'onda dell'onda elettromagnetica incidente (assorbimento del fotone) e di trasformare questo evento in un segnale elettrico di corrente applicando ai suoi estremi un opportuno potenziale elettrico. Esso è dunque un trasduttore da un segnale ottico ad un segnale elettrico.} che 

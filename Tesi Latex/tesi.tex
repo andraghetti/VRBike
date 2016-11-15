@@ -1,4 +1,4 @@
-\documentclass[11pt,a4paper,twoside,openright]{report}
+\documentclass[12pt,a4paper,twoside,openright]{report}
 
 \usepackage[dvips]{graphicx}
 \usepackage{tabularx}
@@ -11,8 +11,9 @@
 \hyphenation{a-gen-tiz-za-zio-ne}
 
 
-%\usepackage{showframe}
-
+%\usepackage{showframe} % per i frame del testo
+\usepackage{nameref} %per il nome dei capitoli
+\usepackage{gensymb} % per i simboli tipo °
 
 
 \setlength{\paperwidth}{16cm}
@@ -49,8 +50,6 @@
 \include{capitolo3}
 \include{capitolo4}
 \include{capitolo5}
-\include{capitolo6}
-\include{capitolo7}
 
 \cleardoublepage
 % ---- Bibliography ----
@@ -72,9 +71,6 @@
 \renewcommand{\headrulewidth}{0.3pt} 
 
 \include{appendiceA}
-\include{appendiceB}
-\include{appendiceC}
-\include{appendiceE}
 
 \end{document}
 
