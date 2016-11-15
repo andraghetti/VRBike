@@ -67,6 +67,7 @@ namespace GloveLibrary
             MotoController.msgToDebug("close glove");
             
             receiver.closePort();
+            this.stopThread();
         }
     }
 }

@@ -57,7 +57,9 @@ public class MotoController : MonoBehaviour {
     private bool reversing = false;
     private float sterzata;
     private int lastInputSterzata;
+    private float lastSterzata; 
     private Vector3 euler;
+    private Vector3 FrontEuler;
     private Thread thread;
 
     void Start()
@@ -76,6 +78,7 @@ public class MotoController : MonoBehaviour {
         thread = new Thread(dtw.start);
 
         euler = SteeringHandlebar.localEulerAngles;
+        FrontEuler = FrontWheelTransform.localEulerAngles;
 
         thread.Start();
     }
@@ -87,9 +90,10 @@ public class MotoController : MonoBehaviour {
             
         pedalata = inputPedalata/maxSpeedPedalata;
 
-        sterzata = (inputSterzo - 7.0f) / 8;
+        sterzata = (inputSterzo - 7.0f) / 8; // Mathf.Lerp(lastSterzata, (inputSterzo - 7.0f) / 8, 0.2f);
 
         lastInputSterzata = inputSterzo;
+        lastSterzata = sterzata;
 
         //msgToDebug("Sterzata: "+arg1+" -> "+sterzata);
         //msgToDebug("Velocità: "+arg2+" -> "+pedalata);
@@ -214,7 +218,7 @@ public class MotoController : MonoBehaviour {
 
         if (Physics.Raycast(ColliderCenterPointFL, -FrontWheelCollider.transform.up, out hit, (FrontWheelCollider.suspensionDistance + FrontWheelCollider.radius) * transform.localScale.y))
         {
-            if (hit.transform.gameObject.layer != LayerMask.NameToLayer("Bike"))
+            if (hit.transform.gameObject.layer != LayerMask.NameToLayer("Bici"))
             {
                 FrontWheelTransform.transform.position = hit.point + (FrontWheelCollider.transform.up * FrontWheelCollider.radius) * transform.localScale.y;
                 extension_F = (-FrontWheelCollider.transform.InverseTransformPoint(CorrespondingGroundHit.point).y - FrontWheelCollider.radius) / FrontWheelCollider.suspensionDistance;
@@ -227,15 +231,18 @@ public class MotoController : MonoBehaviour {
         {
             FrontWheelTransform.transform.position = ColliderCenterPointFL - (FrontWheelCollider.transform.up * FrontWheelCollider.suspensionDistance) * transform.localScale.y;
         }
+        //rotazione ruota anteriore: x fissa, y data dal movimento, z data dal perno
         RotationValue1 += FrontWheelCollider.rpm * (6) * Time.deltaTime;
-        FrontWheelTransform.transform.rotation = FrontWheelCollider.transform.rotation * Quaternion.Euler(RotationValue1, FrontWheelCollider.steerAngle, FrontWheelCollider.transform.rotation.z);
+        FrontEuler.x = 0;
+        FrontEuler.y = -RotationValue1;
+        FrontWheelTransform.localEulerAngles = FrontEuler;
 
         Vector3 ColliderCenterPointRL = RearWheelCollider.transform.TransformPoint(RearWheelCollider.center);
         RearWheelCollider.GetGroundHit(out CorrespondingGroundHit);
 
         if (Physics.Raycast(ColliderCenterPointRL, -RearWheelCollider.transform.up, out hit, (RearWheelCollider.suspensionDistance + RearWheelCollider.radius) * transform.localScale.y))
         {
-            if (hit.transform.gameObject.layer != LayerMask.NameToLayer("Bike"))
+            if (hit.transform.gameObject.layer != LayerMask.NameToLayer("Bici"))
             {
                 RearWheelTransform.transform.position = hit.point + (RearWheelCollider.transform.up * RearWheelCollider.radius) * transform.localScale.y;
                 extension_R = (-RearWheelCollider.transform.InverseTransformPoint(CorrespondingGroundHit.point).y - RearWheelCollider.radius) / RearWheelCollider.suspensionDistance;
@@ -249,18 +256,15 @@ public class MotoController : MonoBehaviour {
             RearWheelTransform.transform.position = ColliderCenterPointRL - (RearWheelCollider.transform.up * RearWheelCollider.suspensionDistance) * transform.localScale.y;
         }
         RotationValue2 += RearWheelCollider.rpm * (6) * Time.deltaTime;
-        RearWheelTransform.transform.rotation = RearWheelCollider.transform.rotation * Quaternion.Euler(RotationValue2, RearWheelCollider.steerAngle, RearWheelCollider.transform.rotation.z);
+        RearWheelTransform.transform.rotation = RearWheelCollider.transform.rotation * Quaternion.Euler(RotationValue2, RearWheelCollider.steerAngle, RearWheelCollider.transform.rotation.z+90);
 
-        //Steering Wheel transforms
+        //rotazione del manubrio
 		if (SteeringHandlebar) {
             //ottengo la differenza di angolo tra la posizione corrente (euler.z) e l'angolo della wheelcollider
             float angleDifference = euler.z - FrontWheelCollider.steerAngle;
             
             euler.z = (euler.z - angleDifference) % 360; //applico la differenza
             SteeringHandlebar.localEulerAngles = euler;  // aggiorno la rotazione
-
-            // SteeringHandlebar.transform.rotation = FrontWheelCollider.transform.rotation * Quaternion.Euler(270, FrontWheelCollider.steerAngle, FrontWheelCollider.transform.rotation.z+90);
-
         }
     }
 

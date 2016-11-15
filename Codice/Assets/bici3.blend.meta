@@ -10,20 +10,30 @@ ModelImporter:
     100004: Manubrio
     100006: Perno
     100008: Telaio
+    100010: FrontMesh
+    100012: RearMesh
     400000: //RootNode
     400002: Line13
     400004: Manubrio
     400006: Perno
     400008: Telaio
+    400010: FrontMesh
+    400012: RearMesh
     2300000: Manubrio
     2300002: Perno
     2300004: Telaio
+    2300006: FrontMesh
+    2300008: RearMesh
     3300000: Manubrio
     3300002: Perno
     3300004: Telaio
+    3300006: FrontMesh
+    3300008: RearMesh
     4300000: Telaio
     4300002: Perno
     4300004: Manubrio
+    4300006: FrontMesh
+    4300008: RearMesh
     7400000: Default Take
     9500000: //RootNode
   materials:
