@@ -294,9 +294,10 @@ public class MotoController : MonoBehaviour {
 
     void OnApplicationQuit()
     {
-        Debug.Log("Chiusura del programma: " + (dtw == null));
-        thread.Abort();
+        dtw.go = false;
         dtw.stopThread();
+        thread.Join();
+        Debug.Log("Chiusura del programma: " + (thread.ThreadState));
     }
 
     public static void msgToDebug(string txt)
