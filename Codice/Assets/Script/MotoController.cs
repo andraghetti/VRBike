@@ -20,7 +20,7 @@ public class MotoController : MonoBehaviour {
     public WheelCollider RearWheelCollider;
     public Transform FrontWheelTransform;
     public Transform RearWheelTransform;
-    public Transform SteeringHandlebar;
+	public Transform SteeringHandlebar;
     public Transform Centro;
 
     //Gearbox
@@ -56,6 +56,7 @@ public class MotoController : MonoBehaviour {
     public float steerInput = 0f;
     private bool reversing = false;
     private float sterzata;
+    private int lastInputSterzata;
 
     void Start()
     {
@@ -66,6 +67,7 @@ public class MotoController : MonoBehaviour {
         rigid.maxAngularVelocity = 2f;
         
         defsteerAngle = SteerAngle;
+        lastInputSterzata = 7;
 
         dtw = new ThreadDTWSlideWindow(PortName);
         dtw.PedalataTrovata += Dtw_PedalataTrovata; ;
@@ -74,11 +76,16 @@ public class MotoController : MonoBehaviour {
         t.Start();
     }
 
-    private void Dtw_PedalataTrovata(int arg1, float arg2)
+    private void Dtw_PedalataTrovata(int inputSterzo, float inputPedalata)
     {
-        pedalata = arg2/maxSpeedPedalata;
+        if (lastInputSterzata == 0 && inputSterzo == 15)
+            inputSterzo = 0;
+            
+        pedalata = inputPedalata/maxSpeedPedalata;
 
-        sterzata = (arg1 - 7.0f) / 8;
+        sterzata = (inputSterzo - 7.0f) / 8;
+
+        lastInputSterzata = inputSterzo;
 
         //msgToDebug("Sterzata: "+arg1+" -> "+sterzata);
         //msgToDebug("Velocità: "+arg2+" -> "+pedalata);
@@ -108,7 +115,7 @@ public class MotoController : MonoBehaviour {
 
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 
-        //questo serviva per frenare dopo un certo tempo.
+        //questo serviva per frenare dopo un certo tempo ma non serve per niente
         /*
         deltaTimePedalata += Time.deltaTime;
 
@@ -118,15 +125,14 @@ public class MotoController : MonoBehaviour {
             msgToDebug("pedalata è 0 per via del delta");
         }
         */
-
-        //if(motorInput != pedalata || steerInput != sterzata)
-            msgToDebug("set input: "+motorInput+" ---- "+steerInput);
+        
+        
+        
+        //msgToDebug("set input: "+motorInput+" ---- "+steerInput);
 
         //pedalata e sterzata derivano dalla cyclette, mentre input.getaxis deriva dalle frecce della tastiera
         motorInput = pedalata; // Input.GetAxis("Vertical");
-
-
-        steerInput = sterzata; //Input.GetAxis("Horizontal");
+        steerInput = sterzata; // Input.GetAxis("Horizontal");
 
         if (motorInput < 0 && transform.InverseTransformDirection(rigid.velocity).z < 0)
             reversing = true;
@@ -138,7 +144,9 @@ public class MotoController : MonoBehaviour {
     void Engine()
     {
 
+        //questo inibisce la sterzata ad alte velocità
         SteerAngle = Mathf.Lerp(defsteerAngle, highSpeedSteerAngle, (Speed / highSpeedSteerAngleAtSpeed));
+        msgToDebug("sterzata: " + SteerAngle);
         FrontWheelCollider.steerAngle = SteerAngle * steerInput;
 
         //EngineRPM = Mathf.Clamp((((Mathf.Abs((FrontWheelCollider.rpm + RearWheelCollider.rpm)) * gearShiftRate) + MinEngineRPM)), MinEngineRPM, MaxEngineRPM);//  / (currentGear + 1)
@@ -231,7 +239,7 @@ public class MotoController : MonoBehaviour {
                 Debug.DrawLine(CorrespondingGroundHit.point, CorrespondingGroundHit.point - RearWheelCollider.transform.forward * CorrespondingGroundHit.forwardSlip, Color.green);
                 Debug.DrawLine(CorrespondingGroundHit.point, CorrespondingGroundHit.point - RearWheelCollider.transform.right * CorrespondingGroundHit.sidewaysSlip, Color.red);
             }
-        }
+        } 
         else
         {
             RearWheelTransform.transform.position = ColliderCenterPointRL - (RearWheelCollider.transform.up * RearWheelCollider.suspensionDistance) * transform.localScale.y;
@@ -240,9 +248,10 @@ public class MotoController : MonoBehaviour {
         RearWheelTransform.transform.rotation = RearWheelCollider.transform.rotation * Quaternion.Euler(RotationValue2, RearWheelCollider.steerAngle, RearWheelCollider.transform.rotation.z);
 
         //Steering Wheel transforms
-        if (SteeringHandlebar)
-            SteeringHandlebar.transform.rotation = FrontWheelCollider.transform.rotation * Quaternion.Euler(0, FrontWheelCollider.steerAngle, FrontWheelCollider.transform.rotation.z);
+		if (SteeringHandlebar) {
+			SteeringHandlebar.transform.rotation = FrontWheelCollider.transform.rotation * Quaternion.Euler(270, FrontWheelCollider.steerAngle, FrontWheelCollider.transform.rotation.z+90);
 
+		}
     }
 
     void Lean()
