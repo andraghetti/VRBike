@@ -57,6 +57,7 @@ public class MotoController : MonoBehaviour {
     private bool reversing = false;
     private float sterzata;
     private int lastInputSterzata;
+    private Vector3 euler;
 
     void Start()
     {
@@ -72,6 +73,8 @@ public class MotoController : MonoBehaviour {
         dtw = new ThreadDTWSlideWindow(PortName);
         dtw.PedalataTrovata += Dtw_PedalataTrovata; ;
         Thread t = new Thread(dtw.start);
+
+        euler = SteeringHandlebar.localEulerAngles;
 
         t.Start();
     }
@@ -146,7 +149,7 @@ public class MotoController : MonoBehaviour {
 
         //questo inibisce la sterzata ad alte velocità
         SteerAngle = Mathf.Lerp(defsteerAngle, highSpeedSteerAngle, (Speed / highSpeedSteerAngleAtSpeed));
-        msgToDebug("sterzata: " + SteerAngle);
+
         FrontWheelCollider.steerAngle = SteerAngle * steerInput;
 
         //EngineRPM = Mathf.Clamp((((Mathf.Abs((FrontWheelCollider.rpm + RearWheelCollider.rpm)) * gearShiftRate) + MinEngineRPM)), MinEngineRPM, MaxEngineRPM);//  / (currentGear + 1)
@@ -249,9 +252,15 @@ public class MotoController : MonoBehaviour {
 
         //Steering Wheel transforms
 		if (SteeringHandlebar) {
-			SteeringHandlebar.transform.rotation = FrontWheelCollider.transform.rotation * Quaternion.Euler(270, FrontWheelCollider.steerAngle, FrontWheelCollider.transform.rotation.z+90);
+            //ottengo la differenza di angolo tra la posizione corrente (euler.z) e l'angolo della wheelcollider
+            float angleDifference = euler.z - FrontWheelCollider.steerAngle;
+            
+            euler.z = (euler.z - angleDifference) % 360; //applico la differenza
+            SteeringHandlebar.localEulerAngles = euler;  // aggiorno la rotazione
 
-		}
+            // SteeringHandlebar.transform.rotation = FrontWheelCollider.transform.rotation * Quaternion.Euler(270, FrontWheelCollider.steerAngle, FrontWheelCollider.transform.rotation.z+90);
+
+        }
     }
 
     void Lean()
