@@ -1,19 +1,33 @@
 \documentclass[12pt,a4paper,twoside,openright]{report}
 
-\usepackage[dvips]{graphicx}
+%Per immagini
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage{wrapfig}
+\usepackage{lipsum}
+\usepackage{subfig}
+\usepackage{subfloat}
+
+
 \usepackage{tabularx}
-\usepackage{subfigure}
 \usepackage{afterpage}
-\usepackage{amsmath,amssymb}            
+\usepackage{amsmath,amssymb}   
 \usepackage{rotating}  
 \usepackage{fancyhdr}  
-\usepackage[scriptsize]{caption} 
+\usepackage{caption} 
 \hyphenation{a-gen-tiz-za-zio-ne}
+%\usepackage[htt]{hyphenat}
+%\usepackage[none]{hyphenat}
+
+%%per gli hyper text e url
+%\usepackage{url}
 
 
 %\usepackage{showframe} % per i frame del testo
 \usepackage{nameref} %per il nome dei capitoli
 \usepackage{gensymb} % per i simboli tipo °
+\newcommand{\Csharp}{%
+  {\settoheight{\dimen0}{C}C\kern-.05em \resizebox{!}{\dimen0}{\raisebox{\depth}{\#}}}} % per c#      
 
 
 \setlength{\paperwidth}{16cm}
@@ -23,7 +37,6 @@
 \setlength{\textwidth}{380pt}
 
 \usepackage[italian]{babel}
-\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \renewcommand{\captionfont}{\normalfont \sffamily \itshape \small}
 
@@ -56,7 +69,7 @@
 \addcontentsline{toc}{chapter}{Bibliografia}
 \bibliographystyle{plain}
 \bibliography{bibl_tesi}
-%\nocite{*}
+\nocite{*}
 
 \appendix
 
