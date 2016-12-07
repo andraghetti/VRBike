@@ -1,17 +1,17 @@
 ﻿using UnityEngine;
-using GloveLibrary;
+using SerialLibrary;
 using System.Threading;
 using System.IO;
 
 public class MotoController : MonoBehaviour {
 
-    private GloveLibrary.ThreadDTWSlideWindow dtw;
+    private SerialLibrary.DataReceiver receiver;
     private float pedalata;
-    private float deltaTimePedalata;
+    //private float deltaTimePedalata;
 
     public string PortName = "COM5";
     
-    public float deltaTimeSoglia = 0.71f;
+    //public float deltaTimeSoglia = 0.71f;
     public float maxSpeedPedalata = 50.0f;
 
     private Rigidbody rigid;
@@ -23,24 +23,21 @@ public class MotoController : MonoBehaviour {
 	public Transform SteeringHandlebar;
     public Transform Centro;
 
-    //Gearbox
-    public float gearShiftRate = 10.0f;
 
     //Bike Body Lean
     public GameObject body;
-    public float bodyVerticalLean = 4.0f;
-    public float bodyHorizontalLean = 4.0f;
+    public float bodyVerticalLean = 10.0f;
+    public float bodyHorizontalLean = 10.0f;
     private float horizontalLean = 0.0f;
     private float verticalLean = 0.0f;
 
     //Configurations
     public float EngineTorque = 1500f;
-    public float MaxEngineRPM = 6000f;
-    public float MinEngineRPM = 1000f;
-    public float SteerAngle = 40f;
-    [HideInInspector]
+
+	//[HideInInspector]
+    public float SteerAngle = 30f;
     public float Speed;
-    public float highSpeedSteerAngle = 5f;
+    public float highSpeedSteerAngle = 40f;
     public float highSpeedSteerAngleAtSpeed = 80f;
     public float maxSpeed = 180f;
     public float Brake = 2500f;
@@ -52,7 +49,7 @@ public class MotoController : MonoBehaviour {
     private float RotationValue1 = 0f;
     private float RotationValue2 = 0f;
 
-    [HideInInspector]
+    //[HideInInspector]
     public float steerInput = 0f;
     private bool reversing = false;
     private float sterzata;
@@ -73,91 +70,50 @@ public class MotoController : MonoBehaviour {
         defsteerAngle = SteerAngle;
         lastInputSterzata = 7;
 
-        dtw = new ThreadDTWSlideWindow(PortName);
-        dtw.PedalataTrovata += Dtw_PedalataTrovata; ;
-        thread = new Thread(dtw.start);
+        receiver = new DataReceiver(PortName);
+        receiver.PedalataTrovata += Receiver_PedalataTrovata;
+        thread = new Thread(receiver.start);
 
         euler = SteeringHandlebar.localEulerAngles;
         FrontEuler = FrontWheelTransform.localEulerAngles;
 
         thread.Start();
-    }
-
-    private void Dtw_PedalataTrovata(int inputSterzo, float inputPedalata)
-    {
-        if (lastInputSterzata == 0 && inputSterzo == 15)
-            inputSterzo = 0;
-            
-        pedalata = inputPedalata/maxSpeedPedalata;
-
-        sterzata = (inputSterzo - 7.0f) / 8; // Mathf.Lerp(lastSterzata, (inputSterzo - 7.0f) / 8, 0.2f);
-
-        lastInputSterzata = inputSterzo;
-        lastSterzata = sterzata;
-
-        //msgToDebug("Sterzata: "+arg1+" -> "+sterzata);
-        //msgToDebug("Velocità: "+arg2+" -> "+pedalata);
-    }
-
-    void FixedUpdate()
-    {
-
-        Inputs();
-        Engine();
-        Braking();
-
-    }
-
-    void Update()
-    {
-        Inputs();
-        WheelAlign();
-        Lean();
-
-    }
-
+	}
+	
     void Inputs()
     {
-
         Speed = rigid.velocity.magnitude * 3.6f;
 
         transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y, 0);
 
         //questo serviva per frenare dopo un certo tempo ma non serve per niente
-        /*
-        deltaTimePedalata += Time.deltaTime;
 
-        if (deltaTimePedalata > deltaTimeSoglia)
-        {
-            pedalata = 0;
-            msgToDebug("pedalata è 0 per via del delta");
-        }
-        */
-        
-        
-        
-        //msgToDebug("set input: "+motorInput+" ---- "+steerInput);
+        // deltaTimePedalata += Time.deltaTime;
+//
+//         if (deltaTimePedalata > deltaTimeSoglia)
+//         {
+//             pedalata = 0;
+//             msgToDebug("pedalata è 0 per via del delta");
+//         }
 
         //pedalata e sterzata derivano dalla cyclette, mentre input.getaxis deriva dalle frecce della tastiera
-        motorInput = pedalata; // Input.GetAxis("Vertical");
-        steerInput = sterzata; // Input.GetAxis("Horizontal");
+        motorInput = pedalata + Input.GetAxis("Vertical");
+        steerInput = sterzata + Input.GetAxis("Horizontal");
 
         if (motorInput < 0 && transform.InverseTransformDirection(rigid.velocity).z < 0)
             reversing = true;
         else
             reversing = false;
-
     }
 
     void Engine()
     {
-
         //questo inibisce la sterzata ad alte velocità
-        SteerAngle = Mathf.Lerp(defsteerAngle, highSpeedSteerAngle, (Speed / highSpeedSteerAngleAtSpeed));
+        //SteerAngle = Mathf.Lerp(defsteerAngle, highSpeedSteerAngle, (Speed / highSpeedSteerAngleAtSpeed));
 
         FrontWheelCollider.steerAngle = SteerAngle * steerInput;
-
-        //EngineRPM = Mathf.Clamp((((Mathf.Abs((FrontWheelCollider.rpm + RearWheelCollider.rpm)) * gearShiftRate) + MinEngineRPM)), MinEngineRPM, MaxEngineRPM);//  / (currentGear + 1)
+		
+		//EngineRPM = Mathf.Clamp((((Mathf.Abs((FrontWheelCollider.rpm + RearWheelCollider.rpm)) * gearShiftRate) + MinEngineRPM)), MinEngineRPM, MaxEngineRPM);//  / (currentGear + 1)
 
         if (Speed > maxSpeed)
         {
@@ -179,14 +135,11 @@ public class MotoController : MonoBehaviour {
                 RearWheelCollider.motorTorque = 0;
             }
         }
-
     }
 
     public void Braking()
     {
-
         // Deceleration.
-
         if (Mathf.Abs(pedalata) <= .05f)
         {
             FrontWheelCollider.brakeTorque = (Brake) / friction; // 25f;
@@ -207,7 +160,6 @@ public class MotoController : MonoBehaviour {
 
     void WheelAlign()
     {
-
         RaycastHit hit;
         WheelHit CorrespondingGroundHit;
         float extension_F;
@@ -222,10 +174,7 @@ public class MotoController : MonoBehaviour {
             {
                 FrontWheelTransform.transform.position = hit.point + (FrontWheelCollider.transform.up * FrontWheelCollider.radius) * transform.localScale.y;
                 extension_F = (-FrontWheelCollider.transform.InverseTransformPoint(CorrespondingGroundHit.point).y - FrontWheelCollider.radius) / FrontWheelCollider.suspensionDistance;
-                Debug.DrawLine(CorrespondingGroundHit.point, CorrespondingGroundHit.point + FrontWheelCollider.transform.up * (CorrespondingGroundHit.force / 8000), extension_F <= 0.0f ? Color.magenta : Color.white);
-                Debug.DrawLine(CorrespondingGroundHit.point, CorrespondingGroundHit.point - FrontWheelCollider.transform.forward * CorrespondingGroundHit.forwardSlip, Color.green);
-                Debug.DrawLine(CorrespondingGroundHit.point, CorrespondingGroundHit.point - FrontWheelCollider.transform.right * CorrespondingGroundHit.sidewaysSlip, Color.red);
-            }
+			}
         }
         else
         {
@@ -246,10 +195,7 @@ public class MotoController : MonoBehaviour {
             {
                 RearWheelTransform.transform.position = hit.point + (RearWheelCollider.transform.up * RearWheelCollider.radius) * transform.localScale.y;
                 extension_R = (-RearWheelCollider.transform.InverseTransformPoint(CorrespondingGroundHit.point).y - RearWheelCollider.radius) / RearWheelCollider.suspensionDistance;
-                Debug.DrawLine(CorrespondingGroundHit.point, CorrespondingGroundHit.point + RearWheelCollider.transform.up * (CorrespondingGroundHit.force / 8000), extension_R <= 0.0f ? Color.magenta : Color.white);
-                Debug.DrawLine(CorrespondingGroundHit.point, CorrespondingGroundHit.point - RearWheelCollider.transform.forward * CorrespondingGroundHit.forwardSlip, Color.green);
-                Debug.DrawLine(CorrespondingGroundHit.point, CorrespondingGroundHit.point - RearWheelCollider.transform.right * CorrespondingGroundHit.sidewaysSlip, Color.red);
-            }
+			}
         } 
         else
         {
@@ -267,6 +213,35 @@ public class MotoController : MonoBehaviour {
             SteeringHandlebar.localEulerAngles = euler;  // aggiorno la rotazione
         }
     }
+
+    void FixedUpdate()
+    {
+        Inputs();
+        Engine();
+        Braking();
+    }
+
+    void Update()
+    {
+        Inputs();
+        WheelAlign();
+        Lean();
+    }
+	
+    private void Receiver_PedalataTrovata(int inputSterzo, float inputPedalata)
+    {
+        if (lastInputSterzata == 0 && inputSterzo == 15)
+            inputSterzo = 0;
+            
+        pedalata = inputPedalata/maxSpeedPedalata;
+
+        sterzata = (inputSterzo - 7.0f) / 8; // Mathf.Lerp(lastSterzata, (inputSterzo - 7.0f) / 8, 0.2f);
+
+        lastInputSterzata = inputSterzo;
+        lastSterzata = sterzata;
+    }
+
+    
 
     void Lean()
     {
@@ -289,13 +264,12 @@ public class MotoController : MonoBehaviour {
         body.transform.localRotation = target;
 
         rigid.centerOfMass = new Vector3((Centro.localPosition.x) * transform.localScale.x, (Centro.localPosition.y) * transform.localScale.y, (Centro.localPosition.z) * transform.localScale.z);
-
     }
 
     void OnApplicationQuit()
     {
-        dtw.go = false;
-        dtw.stopThread();
+        receiver.go = false;
+        receiver.stop();
         thread.Join();
         Debug.Log("Chiusura del programma: " + (thread.ThreadState));
     }
