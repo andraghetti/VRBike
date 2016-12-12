@@ -20,7 +20,7 @@ Per ottenere le informazioni relative alla posizione del manubrio è stato scelt
     \vspace{-1.5cm}
     \includegraphics[width=0.2\textwidth]{codifica4bit}
 \end{wrapfigure}
-Per poter rilevare la posizione corrente è stata necessaria una codifica in 4 bit. Per ottenere questa codifica, si è fatto uso di 4 fotodiodi\footnote{Il fotodiodo è un particolare tipo di diodo fotorilevatore che funziona come sensore ottico sfruttando l'effetto fotovoltaico, in grado cioè di riconoscere una determinata lunghezza d'onda dell'onda elettromagnetica incidente e di trasformare questo evento in un segnale elettrico di corrente applicando ai suoi estremi un opportuno potenziale elettrico. Esso è dunque un trasduttore da un segnale ottico ad un segnale elettrico.} che permettono di rilevare i 4 spazi che compongono una delle delle 16 configurazioni. I fotodiodi permettono di distinguere uno spazio vuoto da uno spazio pieno creando un segnale elettrico. Le configurazioni sono state realizzate con un oggetto stampato con stampante 3D, come si vede in figura \ref{manubrio}b, in permutazione ciclica (figura a lato), che permette di accorpare gli \textit{uni} e gli \textit{zeri} e ridurre l'alternanza di \textit{vuoti} e \textit{pieni}.
+Per poter rilevare la posizione corrente è stata necessaria una codifica in 4 bit. Per ottenere questa codifica, si è fatto uso di 4 fotodiodi\footnote{Il fotodiodo è un particolare tipo di diodo fotorilevatore che funziona come sensore ottico sfruttando l'effetto fotovoltaico, in grado cioè di riconoscere una determinata lunghezza d'onda dell'onda elettromagnetica incidente e di trasformare questo evento in un segnale elettrico di corrente applicando ai suoi estremi un opportuno potenziale elettrico. Esso è dunque un trasduttore da un segnale ottico ad un segnale elettrico.} che permettono di rilevare i 4 spazi che compongono una delle 16 configurazioni. I fotodiodi permettono di distinguere uno spazio vuoto da uno spazio pieno creando un segnale elettrico. Le configurazioni sono state realizzate con un oggetto stampato con stampante 3D, come si vede in figura \ref{manubrio}b, in permutazione ciclica (figura a lato), che permette di accorpare gli \textit{uni} e gli \textit{zeri} e ridurre l'alternanza di \textit{vuoti} e \textit{pieni}.
 
 
 \section{Sensori del volano}
@@ -40,17 +40,24 @@ La bicicletta virtuale deve muoversi ad una velocità consona alla rotazione del
 \end{itemize}
 In figura \ref{volano}c si può osservare l'intero sistema del volano.
 
-\section{Microcontrollore}
-\begin{wrapfigure}{r}{0.4\textwidth} %this figure will be at the right
-    \centering
-    \vspace{-1.3cm}
-    \includegraphics[height=5.5cm]{arduino}
-    \caption{La scheda Arduino Micro e il modulo bluetooth}
-    \vspace{-1.3cm}
-\end{wrapfigure}
+%\begin{wrapfigure}{r}{0.4\textwidth} %this figure will be at the right
+%    \centering
+%    \vspace{-1.3cm}
+%    \includegraphics[height=5.5cm]{arduino}
+%    \caption{La scheda Arduino Micro e il modulo bluetooth}
+%    \vspace{-1.3cm}
+%\end{wrapfigure}
 
+\section{Microcontrollore}
 %=========CHIEDI a lanzoni come viene ottenuto il dato dall'accelerometro e come viene ottenuto il + e il -
-Il cuore della parte hardware è la scheda Arduino che elabora tutti i dati ricevuti via cavo o via bluetooth. La scheda con il microcontrollore è in continua comunicazione in input e in output con il modulo bluetooth poiché deve ricevere l'informazione sulla rotazione dall'accelerometro e deve inviare all'elaboratore esterno una stringa contenente tutte le informazioni sotto forma di stringa.
+\noindent Il cuore della parte hardware è la scheda Arduino che elabora tutti i dati ricevuti via cavo dai fotodiodi del manubrio e del volano. Questo microcontrollore è in continua comunicazione in output con il modulo bluetooth poiché deve elaborare le informazioni che riceve dai fotodiodi ed inviarle al computer principale sotto forma di stringa.\\
+ \begin{figure}[htb]
+    \centering
+    %\vspace{-0.7cm}
+    \includegraphics[height=8cm]{arduino}
+    \caption{La scheda Arduino Micro e il modulo bluetooth\label{fig:arduino}}
+    %\vspace{-0.3cm}
+\end{figure}
 
 \subsection{Stringa composta dal microcontrollore}
 \label{stringa}
@@ -76,7 +83,7 @@ La ricezione della stringa avviene tramite un ricevitore bluetooth collegato ad 
 \noindent OSVR é l'acronimo di \textit{Open-Source Virtual Reality} ed identifica la piattaforma software open-source per la Realtà Virtuale e quella aumentata. \\È stata sviluppata dalla Razer e da Sensics. La prima è l'azienda leader nel settore del gaming, mentre la seconda lo è nel settore della realtà virtuale. Affinché questa piattaforma sfondasse nel mercato, le società sopracitate hanno deciso di rendere open-source sia il software sia l'hardware per i programmatori. È infatti reperibile su github il codice sorgente. OSVR consente in modo davvero semplice la configurazione e la gestione dei vari dispositivi: occhiali VR, inseguitori di posizione, periferiche di gioco e vari altri. 
 
 \subsection{Caratteristiche}
-L'OSVR è composto da un display montato su una visiera, o meglio head-mounted (HMD), da 2 lenti amovibili, da un display OLED da 5.5 pollici con risoluzione 1920 x 1080 pixel, 60 fps di refresh rate e campo visivo di 100 gradi. Contiene una scheda madre riprogrammabile con accelerometro e giroscopio integrati. Il visore OSVR dispone di doppie lenti che consentono di ridurre la distorsione delle immagini. A differenza di altri visori, questo dispone di una cintura elastica che porta i cavi fino all'altezza del muscolo trapezio dell'utilizzatore, in modo da non limitarne il movimento e quindi l'esperienza di gioco.\newpage
+L'OSVR è composto da un display montato su una visiera, o meglio head-mounted (HMD), da 2 lenti amovibili, da un display OLED da 5.5 pollici con risoluzione 1920 x 1080 pixel, 60 fps di refresh rate e campo visivo di 100 gradi. Contiene una scheda madre riprogrammabile con accelerometro e giroscopio integrati. Il visore OSVR dispone di doppie lenti che consentono di ridurre la distorsione delle immagini. A differenza di altri visori, questo dispone di una cintura elastica che porta i cavi fino all'altezza delle spalle dell'utilizzatore, in modo da non limitarne il movimento e quindi l'esperienza di gioco.\\
 
  \begin{figure}[htb]
     \centering
