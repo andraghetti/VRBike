@@ -100,7 +100,7 @@ public class MotoController : MonoBehaviour {
         motorInput = pedalata + Input.GetAxis("Vertical");
         steerInput = sterzata + Input.GetAxis("Horizontal");
 
-        if (motorInput < 0 && transform.InverseTransformDirection(rigid.velocity).z < 0)
+        if (motorInput < 0)
             reversing = true;
         else
             reversing = false;
@@ -223,7 +223,6 @@ public class MotoController : MonoBehaviour {
 
     void Update()
     {
-        Inputs();
         WheelAlign();
         Lean();
     }
@@ -268,7 +267,6 @@ public class MotoController : MonoBehaviour {
 
     void OnApplicationQuit()
     {
-        receiver.go = false;
         receiver.stop();
         thread.Join();
         Debug.Log("Chiusura del programma: " + (thread.ThreadState));
