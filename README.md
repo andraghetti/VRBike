@@ -4,6 +4,6 @@
 
 Bike simulator on Unity with OSVR (old Release) and Oculus Rift
 
-In future we will use Oculus Rift and a real Bike on rollers to get force feedback.
+In future we will use a real Bike on rollers to get force feedback.
 
 You can watch a demo on YouTube: https://youtu.be/S_ngIWMFXKQ
